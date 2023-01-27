@@ -1,11 +1,14 @@
 import React from 'react';
+import Header from './components/Header';
+import Home from './views/Home';
 
-const App = () => {
+function App() {
   return (
     <div>
-      <h1>MERN + Typescript Template</h1>
+      <Header />
+      <Home />
     </div>
   );
-};
+}
 
 export default App;
