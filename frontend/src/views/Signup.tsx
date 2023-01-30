@@ -4,9 +4,9 @@ import SignupForm from '../components/SignupForm';
 
 export default function Signup() {
   return (
-    <div>
+    <div className="flex flex-col h-screen">
       <Header />
-      <div className="flex h-full w-full flex-col items-center	 bg-neutral-900">
+      <div className="flex flex-col flex-1 items-center bg-neutral-900">
         <SignupForm />
       </div>
     </div>

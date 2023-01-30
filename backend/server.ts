@@ -1,9 +1,10 @@
 import express from "express";
-
-import mongoose, { connect, connection } from "mongoose";
+import { connect, connection } from "mongoose";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
+import cors from "cors";
+import { router as formRouter } from "./routes/form";
 
 // Configurations
 // const __filename = fileURLToPath(import.meta.url);
@@ -12,20 +13,29 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 5000;
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+app.use(cors);
+app.use(express.static(path.join(__dirname, "public")));
+
+app.get("/signup", formRouter);
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`App listening on port ${port}`);
 });
 
 // Set up mongoose connection
-const mongoDB = process.env.DB_KEY as string;
-connect(mongoDB);
-connection.on(
-  "error",
-  console.error.bind(console, "MongoDB connection error:")
+const mongoDBUri = process.env.DB_KEY as string;
+
+connect(mongoDBUri).catch((error) =>
+  console.log(`Error connecting to server: ${error}`)
 );
+
+const db = connection;
+db.on("error", console.error.bind(console, "connection error: "));
+db.once("connecting", function () {
+  console.log("Attempting to connect to MongoDB");
+});
+db.once("open", function () {
+  console.log("Connected to MongoDB successfully");
+});
