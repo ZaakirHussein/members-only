@@ -15,16 +15,23 @@ const initialState = {
   firstName: '',
   lastName: '',
   email: '',
+  photo: '',
+};
+
+const fileInitialValue = {
+  preview: '',
+  data: '',
 };
 
 export default function SignupForm() {
   const [formValue, setFormValue] = useState(initialState);
+  const [profilePicture, setProfilePicture] = useState(fileInitialValue);
 
   const { username, password, confirmPassword, firstName, lastName, email } =
     formValue;
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
+  const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormValue((prevState) => {
       return {
         ...prevState,
@@ -33,33 +40,30 @@ export default function SignupForm() {
     });
   };
 
-  // const fileUpload = (file) => {
-  //   const url = 'http://example.com/file-upload';
-  //   const formData = new FormData();
-  //   formData.append('file', file);
-  //   const config = {
-  //     headers: {
-  //       'content-type': 'multipart/form-data',
-  //     },
-  //   };
-  //   return post(url, formData, config);
-  // };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
-    const userObject = {
-      first_name: username,
-      last_name: lastName,
-      username: username,
-      email: email,
-      password: password,
+  const handleFileChange = (e) => {
+    const img = {
+      preview: URL.createObjectURL(e.target.files[0]),
+      data: e.target.files[0],
     };
+    setProfilePicture(img);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append('file', profilePicture.data);
 
     axios
-      .post('http://localhost:3000/signup', userObject)
+      .post('http://localhost:3000/signup', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
       // eslint-disable-next-line no-console
-      .then((response) => console.log(response.data))
+      .then((response) => {
+        console.log(response.data);
+        setFormValue(initialState);
+        setProfilePicture(fileInitialValue);
+      })
       .catch((error) => {
         console.log(error);
       });
@@ -70,7 +74,6 @@ export default function SignupForm() {
       <form
         onSubmit={handleSubmit}
         className="space-y-8 divide-y divide-gray-200"
-        encType="multipart/form-data"
       >
         <div className="space-y-8 divide-y divide-gray-200 sm:space-y-5">
           <div className="space-y-6 sm:space-y-5">
@@ -151,7 +154,7 @@ export default function SignupForm() {
 
               <div className="sm:grid sm:grid-cols-3 sm:items-center sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
                 <label
-                  htmlFor="photo"
+                  htmlFor="profilePicture"
                   className="block text-sm font-medium text-neutral-100"
                 >
                   Profile Picture
@@ -159,16 +162,25 @@ export default function SignupForm() {
                 <div className="mt-1 sm:col-span-2 sm:mt-0">
                   <div className="flex items-center">
                     <span className="h-12 w-12 overflow-hidden rounded-full bg-gray-100">
+                      {!profilePicture.preview && (
+                        <img
+                          className="h-full w-full"
+                          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                          alt="default-profilePic"
+                        />
+                      )}
                       <img
                         className="h-full w-full"
-                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                        alt=""
+                        src={profilePicture.preview}
+                        alt="preview-profilePic"
                       />
                     </span>
                     <input
                       className="ml-5 rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-neutral-900 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                       type="file"
                       name="profilePicture"
+                      id="profilePicture"
+                      onChange={handleFileChange}
                     />
                   </div>
                 </div>
@@ -193,7 +205,7 @@ export default function SignupForm() {
                 <div className="mt-1 sm:col-span-2 sm:mt-0">
                   <input
                     type="text"
-                    name="first_name"
+                    name="firstName"
                     id="firstName"
                     autoComplete="given-name"
                     onChange={handleChange}
@@ -213,7 +225,7 @@ export default function SignupForm() {
                 <div className="mt-1 sm:col-span-2 sm:mt-0">
                   <input
                     type="text"
-                    name="last_name"
+                    name="lastName"
                     id="lastName"
                     autoComplete="family-name"
                     onChange={handleChange}
