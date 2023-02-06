@@ -18,18 +18,12 @@ export const form_validation = [
       if (value != req.body.password) {
         throw new Error("Password confirmation does not match password");
       }
-      // Indicates the success of this synchronous custom validator
-      console.log("passed validation");
       return true;
     }),
 ];
 
 export const loginHandler = function (req: Request, res: Response) {
-  // req.file is the `profilePicture` file
-  // req.body will contain the text fields, if there were any
-
-  console.log(req.file);
-  console.log(req.body);
+  const url = req.protocol + "://" + req.get("host");
 
   bcrypt.hash(req.body.password, 10, (err, hashedPassword) => {
     if (err) {
@@ -41,11 +35,13 @@ export const loginHandler = function (req: Request, res: Response) {
       username: req.body.username,
       email: req.body.email,
       password: hashedPassword,
-      profilePicture: req.file?.filename,
+      profilePicture: url + "/public/uploads/" + req.file?.filename,
     })
-      .then((user) => res.json({ msg: "User added successfully" }))
+      .then((user) => {
+        res.json({ msg: "User added successfully" + user });
+      })
       .catch((err) =>
-        res.status(400).json({ error: "Unable to add this user" })
+        res.status(400).json({ error: "Unable to add this user" + err })
       );
   });
 };

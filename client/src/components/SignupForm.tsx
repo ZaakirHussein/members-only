@@ -4,6 +4,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 // First Name, Last Name, Username, email, password, (confirm password)
 // When value changes of the fields
@@ -15,7 +16,6 @@ const initialState = {
   firstName: '',
   lastName: '',
   email: '',
-  photo: '',
 };
 
 const fileInitialValue = {
@@ -48,21 +48,29 @@ export default function SignupForm() {
     setProfilePicture(img);
   };
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append('file', profilePicture.data);
+    formData.append('username', formValue.username);
+    formData.append('password', formValue.password);
+    formData.append('confirmPassword', formValue.confirmPassword);
+    formData.append('firstName', formValue.firstName);
+    formData.append('lastName', formValue.lastName);
+    formData.append('email', formValue.email);
+    formData.append('profilePicture', profilePicture.data);
 
     axios
       .post('http://localhost:3000/signup', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
-      // eslint-disable-next-line no-console
-      .then((response) => {
-        console.log(response.data);
+      .then((res) => {
         setFormValue(initialState);
         setProfilePicture(fileInitialValue);
+        console.log(res);
+        return navigate(`/`);
       })
       .catch((error) => {
         console.log(error);
