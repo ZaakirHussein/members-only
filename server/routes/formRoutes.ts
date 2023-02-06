@@ -10,14 +10,29 @@ export const formRouter = Router();
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./public/images");
+    cb(null, "./public/uploads");
   },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "--" + file.originalname);
+  filename: (req, file, cb) => {
+    const fileName = file.originalname.toLowerCase().split(" ").join("-");
+    cb(null, uuidv4() + "-" + fileName);
   },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (
+      file.mimetype == "image/png" ||
+      file.mimetype == "image/jpg" ||
+      file.mimetype == "image/jpeg"
+    ) {
+      cb(null, true);
+    } else {
+      cb(null, false);
+      return cb(new Error("Only .png, .jpg and .jpeg format allowed!"));
+    }
+  },
+});
 
 formRouter.post(
   "/",
@@ -25,9 +40,10 @@ formRouter.post(
   form_validation,
   (req: Request, res: Response, next: NextFunction) => {
     const result = validationResult(req).formatWith(errorFormatter);
+    console.log("result above");
     if (!result.isEmpty()) {
       console.log(result.array());
-      return res.json({ errors: result.array() });
+      return res.status(400).json({ errors: result.array() });
     }
     next();
   },

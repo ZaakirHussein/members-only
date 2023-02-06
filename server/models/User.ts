@@ -1,5 +1,4 @@
 import { Schema, model } from "mongoose";
-import { UploadInterface } from "./Upload";
 
 // Document interface
 export interface UserInterface {
@@ -9,7 +8,7 @@ export interface UserInterface {
   email: string;
   password: string;
   membership_status: boolean;
-  profilePicture?: UploadInterface | null;
+  profilePicture?: string | null;
 }
 
 // Schema
@@ -20,7 +19,7 @@ const userSchema = new Schema<UserInterface>({
   email: { type: String, required: true },
   password: { type: String, required: true, minLength: 7 },
   membership_status: { type: Boolean, required: true, default: false },
-  profilePicture: { type: Schema.Types.ObjectId, ref: "Upload", default: null },
+  profilePicture: { type: String, default: null },
 });
 
 export const User = model<UserInterface>("User", userSchema);
