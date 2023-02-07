@@ -3,7 +3,7 @@ import { User } from "../models/User";
 import { body } from "express-validator";
 import { Request, Response } from "express";
 
-export const form_validation = [
+export const signup_validation = [
   body("username").not().isEmpty().trim().escape(),
   body("firstName").not().isEmpty().trim().escape(),
   body("lastName").not().isEmpty().trim().escape(),
@@ -22,7 +22,7 @@ export const form_validation = [
     }),
 ];
 
-export const loginHandler = function (req: Request, res: Response) {
+export const signupHandler = function (req: Request, res: Response) {
   const url = req.protocol + "://" + req.get("host");
 
   bcrypt.hash(req.body.password, 10, (err, hashedPassword) => {
