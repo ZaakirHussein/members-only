@@ -1,12 +1,14 @@
 import { Router, Request, Response, NextFunction } from "express";
-import { validationResult, ValidationError } from "express-validator";
+import { validationResult } from "express-validator";
 import { errorFormatter } from "../utils/utiles";
-import { form_validation, loginHandler } from "../controllers/formController";
+import {
+  signup_validation,
+  signupHandler,
+} from "../controllers/signupController";
 import multer from "multer";
 import { v4 as uuidv4 } from "uuid";
-import path from "path";
 
-export const formRouter = Router();
+export const signupRoutes = Router();
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -34,10 +36,10 @@ const upload = multer({
   },
 });
 
-formRouter.post(
+signupRoutes.post(
   "/",
   upload.single("profilePicture"),
-  form_validation,
+  signup_validation,
   (req: Request, res: Response, next: NextFunction) => {
     const result = validationResult(req).formatWith(errorFormatter);
     console.log("result above");
@@ -47,13 +49,5 @@ formRouter.post(
     }
     next();
   },
-  loginHandler
+  signupHandler
 );
-
-formRouter.get("/", (req, res) => {
-  res.send("Signup form");
-});
-
-formRouter.get("/about", (req, res) => {
-  res.send("About this and that");
-});
