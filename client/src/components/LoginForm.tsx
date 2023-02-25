@@ -2,6 +2,8 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import * as React from 'react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export default function LoginForm() {
   const [loginValues, setLoginValues] = useState({
@@ -21,12 +23,34 @@ export default function LoginForm() {
     });
   };
 
+  const navigate = useNavigate();
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const formData = new FormData();
-    formData.append('username', username);
-    formData.append('password', password);
+    const loginAttempt = {
+      username: username,
+      password: password,
+    };
+
+    axios
+      .post('http://localhost:3000/login', loginAttempt, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then((res) => {
+        console.log('login response: ');
+        console.log(res);
+        setLoginValues({
+          username: '',
+          password: '',
+        });
+        return navigate(`/`);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (

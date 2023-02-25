@@ -1,7 +1,9 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Document } from 'mongoose';
+import bcrypt from 'bcryptjs';
 
 // Document interface
 export interface UserInterface {
+  _id: Schema.Types.ObjectId;
   first_name: string;
   last_name: string;
   username: string;
@@ -22,4 +24,13 @@ const userSchema = new Schema<UserInterface>({
   profilePicture: { type: String, default: null },
 });
 
-export const User = model<UserInterface>("User", userSchema);
+userSchema.methods = {
+  checkPassword: function (inputPassword: string) {
+    return bcrypt.compareSync(inputPassword, this.password);
+  },
+  hashPassword: (plainTextPassword: string) => {
+    return bcrypt.hashSync(plainTextPassword, 10);
+  },
+};
+
+export const User = model<UserInterface>('User', userSchema);

@@ -18,7 +18,7 @@
   },
   "include": [
     "vite.config.ts",
-    "client/.eslintrc.cjs",
+    "../.eslintrc.cjs",
     "client/src",
     "client/src/index.d.ts"
   ],
