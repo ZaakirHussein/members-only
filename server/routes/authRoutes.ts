@@ -1,19 +1,8 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router } from 'express';
+import { loginFormValidation } from '../controllers/authController';
 import { errorResults } from '../utils/utiles';
-import {
-  loginFormValidation,
-  authorizeUser,
-} from '../controllers/authController';
+import { authenticateUser } from '../controllers/authController';
 
 export const authRoutes = Router();
 
-authRoutes.post(
-  '/',
-  loginFormValidation,
-  errorResults,
-  function (req: Request, res: Response, next: NextFunction) {
-    console.log(req.body);
-    next();
-  },
-  authorizeUser
-);
+authRoutes.post('/', loginFormValidation, errorResults, authenticateUser);
