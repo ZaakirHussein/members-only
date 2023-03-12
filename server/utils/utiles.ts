@@ -22,7 +22,7 @@ export const errorResults = (
 
   if (!result.isEmpty()) {
     console.log(result.array());
-    return res.status(400).json({ errors: result.array() });
+    return res.status(404).json({ errors: result.array() });
   }
 
   console.log('passed validation');

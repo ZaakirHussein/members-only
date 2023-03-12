@@ -34,19 +34,23 @@ export default function LoginForm() {
     };
 
     axios
-      .post('http://localhost:3000/login', loginAttempt, {
+      .post('http://localhost:3000/login/', loginAttempt, {
         headers: {
           'Content-Type': 'application/json',
         },
       })
       .then((res) => {
         console.log('login response: ');
-        console.log(res);
+        console.log(res.data.user);
         setLoginValues({
           username: '',
           password: '',
         });
-        return navigate(`/`);
+
+        if (res.status === 200) {
+          return navigate('/');
+        }
+        return navigate(`/login`);
       })
       .catch((error) => {
         console.log(error);
